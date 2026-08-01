@@ -5,7 +5,12 @@ const connectDB = require('./config/db');
 
 const app = express();
 
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || '*' }));
+// CLIENT_ORIGIN can be a single URL or a comma-separated list
+const origins = (process.env.CLIENT_ORIGIN || '*')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+app.use(cors({ origin: origins.includes('*') ? '*' : origins, credentials: true }));
 app.use(express.json());
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
