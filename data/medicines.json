@@ -1,0 +1,102 @@
+[
+  {
+    "sku": "MED-PARA-500",
+    "name": "Paracetamol",
+    "brand": "Calpol",
+    "form": "Tablet",
+    "strength": "500mg",
+    "price": 25,
+    "description": "Pain reliever and fever reducer",
+    "prescriptionRequired": false
+  },
+  {
+    "sku": "MED-IBU-400",
+    "name": "Ibuprofen",
+    "brand": "Brufen",
+    "form": "Tablet",
+    "strength": "400mg",
+    "price": 40,
+    "description": "NSAID for pain and inflammation",
+    "prescriptionRequired": false
+  },
+  {
+    "sku": "MED-AMOX-500",
+    "name": "Amoxicillin",
+    "brand": "Mox",
+    "form": "Capsule",
+    "strength": "500mg",
+    "price": 85,
+    "description": "Broad-spectrum antibiotic",
+    "prescriptionRequired": true
+  },
+  {
+    "sku": "MED-CETI-10",
+    "name": "Cetirizine",
+    "brand": "Zyrtec",
+    "form": "Tablet",
+    "strength": "10mg",
+    "price": 30,
+    "description": "Antihistamine for allergy relief",
+    "prescriptionRequired": false
+  },
+  {
+    "sku": "MED-AZI-500",
+    "name": "Azithromycin",
+    "brand": "Azithral",
+    "form": "Tablet",
+    "strength": "500mg",
+    "price": 120,
+    "description": "Antibiotic for bacterial infections",
+    "prescriptionRequired": true
+  },
+  {
+    "sku": "MED-PANT-40",
+    "name": "Pantoprazole",
+    "brand": "Pan-40",
+    "form": "Tablet",
+    "strength": "40mg",
+    "price": 55,
+    "description": "Acid reflux and ulcer treatment",
+    "prescriptionRequired": false
+  },
+  {
+    "sku": "MED-METF-500",
+    "name": "Metformin",
+    "brand": "Glycomet",
+    "form": "Tablet",
+    "strength": "500mg",
+    "price": 45,
+    "description": "Type 2 diabetes management",
+    "prescriptionRequired": true
+  },
+  {
+    "sku": "MED-COUGH-100",
+    "name": "Dextromethorphan Syrup",
+    "brand": "Benadryl",
+    "form": "Syrup",
+    "strength": "100ml",
+    "price": 95,
+    "description": "Cough suppressant syrup",
+    "prescriptionRequired": false
+  },
+  {
+    "sku": "MED-VITC-500",
+    "name": "Vitamin C",
+    "brand": "Limcee",
+    "form": "Tablet",
+    "strength": "500mg",
+    "price": 35,
+    "description": "Immunity booster",
+    "prescriptionRequired": false
+  },
+  {
+    "sku": "MED-ORS-200",
+    "name": "ORS Powder",
+    "brand": "Electral",
+    "form": "Sachet",
+    "strength": "21.8g",
+    "price": 22,
+    "description": "Oral rehydration salts",
+    "prescriptionRequired": false
+  }
+]
