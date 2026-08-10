@@ -15,4 +15,16 @@ async function protect(req, res, next) {
   }
 }
 
-module.exports = { protect };
+// restrictTo('pharmacy') / restrictTo('admin') — use after protect.
+function restrictTo(...roles) {
+  return (req, res, next) => {
+    if (!req.user) return res.status(401).json({ message: 'Not authorized' });
+    if (!roles.includes(req.user.role))
+      return res.status(403).json({
+        message: `Requires role: ${roles.join(' or ')}. You are '${req.user.role}'.`,
+      });
+    next();
+  };
+}
+
+module.exports = { protect, restrictTo };

@@ -1,22 +1,27 @@
 const Pharmacy = require('../models/Pharmacy');
 const Medicine = require('../models/Medicine');
 const Inventory = require('../models/Inventory');
+const asyncHandler = require('../utils/asyncHandler');
+
+// A row counts as available if the shop said so, or (legacy rows written before
+// tri-state existed) if it still carries a positive count.
+const AVAILABLE = { $or: [{ status: 'in_stock' }, { status: { $exists: false }, stock: { $gt: 0 } }] };
 
 // GET /api/pharmacies  — list all (for the landing-page map)
-exports.list = async (_req, res) => {
+exports.list = asyncHandler(async (_req, res) => {
   const items = await Pharmacy.find().limit(2000);
   res.json(items);
-};
+});
 
 // GET /api/pharmacies/:id  — single pharmacy details
-exports.getById = async (req, res) => {
+exports.getById = asyncHandler(async (req, res) => {
   const p = await Pharmacy.findById(req.params.id);
   if (!p) return res.status(404).json({ message: 'Pharmacy not found' });
   res.json(p);
-};
+});
 
 // GET /api/pharmacies/nearby?lat=..&lon=..&radius=5000
-exports.nearby = async (req, res) => {
+exports.nearby = asyncHandler(async (req, res) => {
   const lat = parseFloat(req.query.lat);
   const lon = parseFloat(req.query.lon);
   const radius = parseInt(req.query.radius || '5000', 10); // metres
@@ -32,10 +37,10 @@ exports.nearby = async (req, res) => {
     },
   }).limit(100);
   res.json(items);
-};
+});
 
-// GET /api/medicines/nearby?name=..&lat=..&lon=..&radius=5000
-exports.nearbyMedicine = async (req, res) => {
+// GET /api/pharmacies/medicines/nearby?name=..&lat=..&lon=..&radius=5000
+exports.nearbyMedicine = asyncHandler(async (req, res) => {
   const name = (req.query.name || '').trim();
   const lat = parseFloat(req.query.lat);
   const lon = parseFloat(req.query.lon);
@@ -69,14 +74,14 @@ exports.nearbyMedicine = async (req, res) => {
   const inv = await Inventory.find({
     sku: { $in: skus },
     pharmacy: { $in: nearbyIds },
-    stock: { $gt: 0 },
+    ...AVAILABLE,
   }).populate('pharmacy').populate('medicine');
 
   res.json(inv);
-};
+});
 
 // GET /api/v1/pharmacies/:id/inventory
-exports.inventory = async (req, res) => {
+exports.inventory = asyncHandler(async (req, res) => {
   const inv = await Inventory.find({ pharmacy: req.params.id }).populate('medicine');
   res.json(inv);
-};
+});

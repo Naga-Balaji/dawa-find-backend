@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const asyncHandler = require('../utils/asyncHandler');
 
 function signToken(userId) {
   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
@@ -7,46 +8,50 @@ function signToken(userId) {
   });
 }
 
-exports.register = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password)
-      return res.status(400).json({ message: 'name, email, password are required' });
+function publicUser(user) {
+  return {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    role: user.role,
+    pharmacy: user.pharmacy,
+  };
+}
 
-    const exists = await User.findOne({ email });
-    if (exists) return res.status(409).json({ message: 'Email already registered' });
+exports.register = asyncHandler(async (req, res) => {
+  const { name, email, password, phone, role } = req.body;
+  if (!name || !email || !password)
+    return res.status(400).json({ message: 'name, email, password are required' });
 
-    const user = await User.create({ name, email, password });
-    const token = signToken(user._id);
-    res.status(201).json({
-      token,
-      user: { id: user._id, name: user.name, email: user.email },
-    });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+  // Self-serve signup may only create customers or pharmacy partners.
+  // Admins are created by scripts/seedAdmin, never over the wire.
+  const requestedRole = role || 'user';
+  if (!['user', 'pharmacy'].includes(requestedRole))
+    return res.status(400).json({ message: "role must be 'user' or 'pharmacy'" });
 
-exports.login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) return res.status(401).json({ message: 'Invalid credentials' });
-    const ok = await user.matchPassword(password);
-    if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
-    const token = signToken(user._id);
-    res.json({ token, user: { id: user._id, name: user.name, email: user.email } });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+  const exists = await User.findOne({ email });
+  if (exists) return res.status(409).json({ message: 'Email already registered' });
+
+  const user = await User.create({ name, email, password, phone, role: requestedRole });
+  res.status(201).json({ token: signToken(user._id), user: publicUser(user) });
+});
+
+exports.login = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) return res.status(401).json({ message: 'Invalid credentials' });
+  const ok = await user.matchPassword(password);
+  if (!ok) return res.status(401).json({ message: 'Invalid credentials' });
+  res.json({ token: signToken(user._id), user: publicUser(user) });
+});
 
 // Stateless JWT: logout is client-side (drop the token).
 // Endpoint kept so the frontend can POST /logout uniformly.
-exports.logout = async (_req, res) => {
+exports.logout = asyncHandler(async (_req, res) => {
   res.json({ message: 'Logged out' });
-};
+});
 
-exports.me = async (req, res) => {
-  res.json({ user: req.user });
-};
+exports.me = asyncHandler(async (req, res) => {
+  res.json({ user: publicUser(req.user) });
+});

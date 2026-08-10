@@ -9,6 +9,8 @@ const pharmacySchema = new mongoose.Schema(
     rating: Number,
     ratingCount: Number,
     hours: String,
+    // Scrape artefact: "Open" / "Closed" at scrape time. NOT the verification
+    // state — see verificationStatus below.
     status: String,
     imageLink: String,
     mapsLink: String,
@@ -19,6 +21,28 @@ const pharmacySchema = new mongoose.Schema(
       coordinates: { type: [Number], required: true },
     },
     medicines: [{ type: String, index: true }],
+
+    // ---- B2B partner fields ----
+    // Where the record came from. 'scrape' rows are directory-only (map pins);
+    // 'partner' rows were self-registered by a shop owner.
+    source: {
+      type: String,
+      enum: ['scrape', 'partner', 'manual'],
+      default: 'scrape',
+      index: true,
+    },
+    // The pharmacy-role User who owns this shop. Null for unclaimed scrape rows.
+    owner: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null, index: true },
+    licenceNo: { type: String, trim: true },
+    verificationStatus: {
+      type: String,
+      enum: ['unverified', 'pending', 'verified', 'rejected'],
+      default: 'unverified',
+      index: true,
+    },
+    verifiedAt: Date,
+    verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+    rejectionReason: String,
   },
   { timestamps: true }
 );

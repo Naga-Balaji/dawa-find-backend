@@ -6,6 +6,18 @@ const userSchema = new mongoose.Schema(
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true, minlength: 6 },
+    phone: { type: String, trim: true },
+    // user     — B2C customer searching for medicine
+    // pharmacy — B2B partner who owns a shop and maintains its inventory
+    // admin    — verifies licences, sees metrics
+    role: {
+      type: String,
+      enum: ['user', 'pharmacy', 'admin'],
+      default: 'user',
+      index: true,
+    },
+    // Set once a pharmacy-role user has registered their shop.
+    pharmacy: { type: mongoose.Schema.Types.ObjectId, ref: 'Pharmacy', default: null },
   },
   { timestamps: true }
 );

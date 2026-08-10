@@ -18,6 +18,8 @@ app.get('/api/health', (_req, res) => res.json({ ok: true }));
 app.use('/api/v1/auth', require('./routes/authRoutes'));
 app.use('/api/v1/pharmacies', require('./routes/pharmacyRoutes'));
 app.use('/api/v1/medicines', require('./routes/medicineRoutes'));
+app.use('/api/v1/partner', require('./routes/partnerRoutes'));
+app.use('/api/v1/admin', require('./routes/adminRoutes'));
 
 app.use((err, _req, res, _next) => {
   console.error(err);
