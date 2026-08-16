@@ -12,6 +12,7 @@
     "migrate:inventory": "node scripts/migrateInventoryStatus.js",
     "test:partner": "node scripts/testPartnerFlow.js",
     "test:partner:local": "node scripts/testPartnerFlowLocal.js",
+    "test:prescription": "node scripts/testPrescriptionLocal.js",
     "dev:sandbox": "node scripts/devSandbox.js"
   },
   "dependencies": {
