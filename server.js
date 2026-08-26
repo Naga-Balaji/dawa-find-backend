@@ -11,7 +11,8 @@ const origins = (process.env.CLIENT_ORIGIN || '*')
   .map((s) => s.trim())
   .filter(Boolean);
 app.use(cors({ origin: origins.includes('*') ? '*' : origins, credentials: true }));
-app.use(express.json());
+// Prescription scans arrive as base64 data URLs, which blow past the 100kb default.
+app.use(express.json({ limit: '12mb' }));
 
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
@@ -20,6 +21,7 @@ app.use('/api/v1/pharmacies', require('./routes/pharmacyRoutes'));
 app.use('/api/v1/medicines', require('./routes/medicineRoutes'));
 app.use('/api/v1/partner', require('./routes/partnerRoutes'));
 app.use('/api/v1/admin', require('./routes/adminRoutes'));
+app.use('/api/v1/ai', require('./routes/aiRoutes'));
 
 app.use((err, _req, res, _next) => {
   console.error(err);
